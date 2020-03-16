@@ -194,6 +194,8 @@ if __name__ == '__main__':
         dd += Currency(16, 'rub')
         print(dd)
         print(cc)
+        print(repr(cc))
+        print(str(cc))
     except Exception as e:
         print(e)
 

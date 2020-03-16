@@ -77,28 +77,28 @@ class UserList(list):
         return sum(self) != sum(other)
 
 
-a = UserList([23, 35, 23])
-c = [6, 7, 8]
-d = a + c
-print(f'Вот он d {d}')
-d = d + a
-print(f'Вот он d {d}')
-a += [2, 5, 10, 1]
-print(f'после сложения {a}')
-b = [1, 5, 10, 20, 50, 100, 1000, 10000, 3434, 233]
-a - b
-a = a - b
-print(f'после a = a - b {a}')
-a -= [-100, -500, -1000, 500]
-print(f'после a -=')
-print(a)
-
-aa = UserList([2, 3, 6])
-alt1 = UserList([1, 1, 1])
-print(aa < alt1)
-print(aa > alt1)
-aeq1 = UserList([3, 2, 6])
-print(aeq1 == aa)
-print(aeq1 != aa)
-print(alt1 != aa)
+if __name__ == '__main__':
+    a = UserList([23, 35, 23])
+    c = [6, 7, 8]
+    d = a + c
+    print(f'Вот он d {d}')
+    d = d + a
+    print(f'Вот он d {d}')
+    a += [2, 5, 10, 1]
+    print(f'после сложения {a}')
+    b = [1, 5, 10, 20, 50, 100, 1000, 10000, 3434, 233]
+    a - b
+    a = a - b
+    print(f'после a = a - b {a}')
+    a -= [-100, -500, -1000, 500]
+    print(f'после a -=')
+    print(a)
+    aa = UserList([2, 3, 6])
+    alt1 = UserList([1, 1, 1])
+    print(aa < alt1)
+    print(aa > alt1)
+    aeq1 = UserList([3, 2, 6])
+    print(aeq1 == aa)
+    print(aeq1 != aa)
+    print(alt1 != aa)
 
