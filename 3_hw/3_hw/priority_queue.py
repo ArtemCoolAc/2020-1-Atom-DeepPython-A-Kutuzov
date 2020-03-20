@@ -6,11 +6,12 @@ import copy
 
 
 class PriorityQueue:
+    """Класс очередь с приоритетом - важная и интересная структура данных"""
     def __init__(self):
         self.heap_list = [0]
         self.current_size = 0
 
-    def perc_up(self, i):
+    def perc_up(self, i: int):
         """Важнейший метод поддержания свойств кучи: если элемент меньше родителя, то меняем его с родителем местами"""
         while i // 2 > 0:
             if self.heap_list[i] < self.heap_list[i // 2]:  # если дитя меньше родителя
@@ -81,100 +82,36 @@ class MyTestCase(unittest.TestCase):
 
     def test_my_heapify(self):
         for _ in range(self.REPEATS_NUMBER):
-            length = random.randint(2, 100)
-            some_list = [random.randint(-100, 100) for _ in range(length)]
-            some_same_list = copy.deepcopy(some_list)
-            B = PriorityQueue()
-            heapq.heapify(some_list)
-            some_same_list = B.heapify(some_same_list)
-            self.assertEqual(some_list, some_same_list)
+            length1 = random.randint(2, 100)
+            some_list1 = [random.randint(-100, 100) for _ in range(length1)]
+            some_same_list1 = copy.deepcopy(some_list1)
+            b1 = PriorityQueue()
+            heapq.heapify(some_list1)
+            some_same_list1 = b1.heapify(some_same_list1)
+            self.assertEqual(some_list1, some_same_list1)
 
     def test_my_pop(self):
         for _ in range(self.REPEATS_NUMBER):
-            length = random.randint(2, 100)
-            some_list = [random.randint(-100, 100) for _ in range(length)]
-            some_same_list = copy.deepcopy(some_list)
-            A = PriorityQueue()
-            heapq.heapify(some_list)
-            heapq.heappop(some_list)
-            some_same_list = A.heappop(some_same_list)
-            self.assertEqual(some_same_list, some_list)
+            length2 = random.randint(3, 100)
+            some_list22 = [random.randint(-100, 150) for _ in range(length2)]
+            some_same_list22 = copy.deepcopy(some_list22)
+            a1 = PriorityQueue()
+            heapq.heapify(some_list22)
+            heapq.heappop(some_list22)
+            some_same_list22 = a1.heappop(some_same_list22)
+            self.assertEqual(some_same_list22, some_list22)
 
     def test_my_push(self):
         for _ in range(self.REPEATS_NUMBER):
-            length = random.randint(2, 100)
-            some_list = [random.randint(-100, 100) for _ in range(length)]
-            some_same_list = copy.deepcopy(some_list)
-            A = PriorityQueue()
+            length3 = random.randint(2, 100)
+            some_list3 = [random.randint(-100, 100) for _ in range(length3)]
+            some_same_list3 = copy.deepcopy(some_list3)
+            a2 = PriorityQueue()
             inserted = random.randint(-100, 100)
-            heapq.heapify(some_list)
-            heapq.heappush(some_list, inserted)
-            some_same_list = A.heappush(some_same_list, inserted)
-            self.assertEqual(some_same_list, some_list)
-
-
-
-
-    # def __init__(self, raw_array=None):
-    #     self.array = raw_array
-    #
-    # @staticmethod
-    # def left(i):
-    #     return 2 * i + 1
-    #
-    # @staticmethod
-    # def right(i):
-    #     return 2 * i + 2
-    #
-    # def max_heapify(self, i):
-    #     largest = i
-    #     n = len(self.array)
-    #     left = self.left(i)
-    #     right = self.right(i)
-    #     if left < n and self.array[left] > self.array[largest]:
-    #         largest = left
-    #         # If right child is larger than largest so far
-    #     if right < n and self.array[right] > self.array[largest]:
-    #         largest = right
-    #     # largest = self.array.index(max(self.array[i], self.array[left], self.array[right]))
-    #     if largest != i:
-    #         self.array[i], self.array[largest] = self.array[largest], self.array[i]
-    #         self.max_heapify(largest)
-    #
-    # def heapify(self, some_list):
-    #     self.array = some_list
-    #     n = len(some_list)
-    #     i = n // 2 - 1
-    #     while i > 0:
-    #         self.max_heapify(i)
-    #         i -= 1
-
-    # def heapify(self, arr, i):
-    #     # self.array = arr
-    #     n = len(arr)
-    #     largest = i  # Initialize largest as root
-    #     l = 2 * i + 1  # left = 2*i + 1
-    #     r = 2 * i + 2  # right = 2*i + 2
-    #
-    #     # If left child is larger than root
-    #     if l < n and arr[l] > arr[largest]:
-    #         largest = l
-    #
-    #         # If right child is larger than largest so far
-    #     if r < n and arr[r] > arr[largest]:
-    #         largest = r
-    #
-    #         # If largest is not root
-    #     if largest != i:
-    #         arr[i], arr[largest] = arr[largest], arr[i]
-    #         self.array = arr
-    #         # Recursively heapify the affected sub-tree
-    #         self.heapify(arr, largest)
-    #
-    # def build_heap(self, arr):
-    #     i = len(arr) // 2 - 1
-    #     for i in range(i, -1, -1):
-    #         self.heapify(arr, i)
+            heapq.heapify(some_list3)
+            heapq.heappush(some_list3, inserted)
+            some_same_list3 = a2.heappush(some_same_list3, inserted)
+            self.assertEqual(some_same_list3, some_list3)
 
 
 if __name__ == '__main__':
@@ -206,8 +143,6 @@ if __name__ == '__main__':
     ddd = A.heap_list[1:]
     print(aa)
     print(ddd)
-    d = [1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17]
-    e = [1, 3, 5, 4, 6, 13, 10, 9, 8, 15, 17]
 
     length = random.randint(2, 100)
     some_list = [random.randint(-100, 100) for _ in range(length)]
@@ -219,11 +154,4 @@ if __name__ == '__main__':
     print(some_list)
     print(some_same_list2)
 
-
     unittest.main()
-
-    # heapq.heapify(d)
-    # print(d)
-    # f = PriorityQueue()
-    # f.heapify(e)
-    # print(f.array)

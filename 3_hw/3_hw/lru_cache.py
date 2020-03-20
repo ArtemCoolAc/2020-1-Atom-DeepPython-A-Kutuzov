@@ -3,7 +3,7 @@ import weakref
 
 class LRUCache:
     class Element(object):
-        """Класс хранимого элемента (это может быть все что душе угодно"""
+        """Класс хранимого элемента (это может быть все что душе угодно)"""
         __slots__ = ['prev', 'next', 'value', '__weakref__']  # для сокращения памяти использование слотов
 
         def __init__(self, value):
@@ -11,7 +11,22 @@ class LRUCache:
             элементы, а также само значение"""
             self.prev, self.next, self.value = None, None, value
 
-    def __init__(self, max_cache_size):
+    class CacheStat:
+        hit = 0
+        miss = 0
+        ratio = 0
+
+        hit_set = 0
+        miss_set = 0
+        ratio_set = 0
+
+        @classmethod
+        def cache_info(cls):
+            print(
+                f'[ Hit: {cls.hit}. Miss: {cls.miss}. Efficiency: {round(cls.ratio, 3)} ] \
+|| [ SET_hit: {cls.hit_set}. SET_miss: {cls.miss_set}. REFRESH_Efficiency: {round(cls.ratio_set, 3)} ]')
+
+    def __init__(self, func=None, max_cache_size=2 ** 20):
         """Используется словарь со слабыми ссылками, чтобы объект действительно удалялся из памяти
         (кэш должен работать быстро и эффективно), иначе постепенно можно заполнить всю память"""
         self.dict = weakref.WeakValueDictionary()
@@ -19,6 +34,7 @@ class LRUCache:
         self.tail = None
         self.count = 0
         self.maxCount = max_cache_size
+        self.func = func  # объект-функция необходим при использовании класса как декоратора
 
     def _remove_element(self, element):
         """Удаление элемента из списка"""
@@ -57,13 +73,40 @@ class LRUCache:
          а значит, работает практически аналогично словарю"""
         element = self.dict.get(key, None)  # из словарика берем элемент по ключу
         if element:  # если элемент вообще есть
+            self.hit_stat()
             self._remove_element(element)  # удаляем откуда-то мб из середины кэша
             self._add_element(element)  # и добавляем его в конец (делаем самым свежим)
             return element.value
-        elif len(*arg):  # если элемента не нашлось, то смотрим позиционные аргументы, если они есть
+        elif len(arg):  # если элемента не нашлось, то смотрим позиционные аргументы, если они есть
+            self.miss_stat()
             return arg[0]  # то возвращаем первый аргумент в качестве значения по умолчанию
         else:
+            self.miss_stat()
             raise KeyError("'%s' is not found in the dictionary", str(key))  # если и такого нет, то исключение
+
+    def set(self, key, value):
+        """Метод set для кэша"""
+        self[key] = value
+
+    def hit_stat(self):
+        """Отмечаем, что произошло кэш-попадание"""
+        self.CacheStat.hit += 1
+        self.CacheStat.ratio = self.CacheStat.hit / (self.CacheStat.hit + self.CacheStat.miss)
+
+    def miss_stat(self):
+        """Отмечаем, что произошел кэш-промах"""
+        self.CacheStat.miss += 1
+        self.CacheStat.ratio = self.CacheStat.hit / (self.CacheStat.hit + self.CacheStat.miss)
+
+    def hit_set_stat(self):
+        """Отметка о кэш попадании при записи данных (то есть обновлении данных)"""
+        self.CacheStat.hit_set += 1
+        self.CacheStat.ratio_set = self.CacheStat.hit_set / (self.CacheStat.hit_set + self.CacheStat.miss_set)
+
+    def miss_set_stat(self):
+        """Отметка о кэш промахе при попытке записи данных"""
+        self.CacheStat.miss_set += 1
+        self.CacheStat.ratio_set = self.CacheStat.hit_set / (self.CacheStat.hit_set + self.CacheStat.miss_set)
 
     def __len__(self):
         return len(self.dict)
@@ -79,13 +122,28 @@ class LRUCache:
         """Метод индексирования с присваиванием"""
         try:
             element = self.dict[key]  # пытаемся вытащить элемент по ключу
+            self.hit_set_stat()
             self._remove_element(element)  # и удалить его из кэша
         except KeyError:  # в случае, если такого ключа нет
+            self.miss_set_stat()
             if self.count == self.maxCount:  # если достигнут лимит размера кэша
                 self._remove_element(self.head)  # то удаляем самый старый элемент (сейчас он в голове списка)
         element = LRUCache.Element(value)  # теперь берется конструктор элемента по значению (это же новый элемент)
         self._add_element(element)  # элемент добавляется в кэш
         self.dict[key] = element  # и в сам словарик
+
+    def __call__(self, *args, **kwargs):
+        """Метод необходим для вызова класса как функции (в нашем случае чтобы использовать кэш как декоратор
+        Хранение в словаре идет по типу
+        key=(<функция>, (<позиционные аргументы>, замороженное множество пар <именованные аргументы>) )"""
+        try:
+            result = self.get((self.func, (args, frozenset(kwargs.items()))))  # ищем результат выполнения функции
+            # по ней самой и по набору её параметров
+        except KeyError:  # если не находим в кэше результатов, то
+            result = self.func(*args, **kwargs)  # выполняем функцию с её аргументами
+            self.set((self.func, (args, frozenset(kwargs.items()))), result)  # и заносим результат в кэш
+            self.CacheStat.cache_info()
+        return result
 
     def __del__(self):
         """Метод необходим, чтобы устранить утечку памяти, так как элементы находятся в списке,
@@ -100,12 +158,21 @@ class LRUCache:
         return f"{{{', '.join([': '.join([str(key), str(self.dict[key].value)]) for key in self.dict])}}}"
 
 
-
 if __name__ == '__main__':
-    a = LRUCache(3)
+    a = LRUCache(max_cache_size=3)
     a[0] = 'szrfsrzf'
     a[1] = 'segdr'
     a[2] = [4, 5]
     a[3] = {3, 15}
     a['4'] = (88, 16, 32)
+    a[(2, 3, 4)] = lambda x: x ** 2
     print(a)
+
+    @LRUCache
+    def fib(n):
+        if n < 2:
+            return n
+        return fib(n - 1) + fib(n - 2)
+
+    print([fib(n) for n in range(100)])
+
