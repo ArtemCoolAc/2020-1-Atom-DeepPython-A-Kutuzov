@@ -72,7 +72,13 @@ class Median:
             self._add_numbers(elem)
             self._rebalance()
             self.medians.append(self._get_median())
-        return medians
+        return self.medians
+
+    def add_number(self, elem: int):
+        self._add_numbers(elem)
+        self._rebalance()
+        self.medians.append(self._get_median())
+        return self.medians
 
 
 if __name__ == '__main__':

@@ -174,5 +174,5 @@ if __name__ == '__main__':
             return n
         return fib(n - 1) + fib(n - 2)
 
-    print([fib(n) for n in range(100)])
+    print([fib(n) for n in range(1000)])
 
