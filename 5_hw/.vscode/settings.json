@@ -1,5 +1,0 @@
-{
-    "python.pythonPath": "5_hw/bin/python3",
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
-}
