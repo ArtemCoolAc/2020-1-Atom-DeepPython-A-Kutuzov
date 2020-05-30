@@ -5,7 +5,7 @@ from my_local_settings import connect_to_database
 class User(ORMBase):
     """Некоторый пользователь"""
     id = IntField(initial_value=0, maximum_value=2 ** 32)
-    name = StringField(maximum_length=200)
+    first_name = StringField(maximum_length=200)
     surname = StringField(maximum_length=200)
     height = IntField(maximum_value=300)
     year_born = IntField(maximum_value=2020)
@@ -20,7 +20,7 @@ class User(ORMBase):
 
 
 if __name__ == '__main__':
-    A = User(name='Артем', surname='Кутузов', height=190, year_born=1998)
+    A = User(first_name='Артем', surname='Кутузов', height=190, year_born=1998)
     # print(A)
 
     connection = connect_to_database()
@@ -31,8 +31,8 @@ if __name__ == '__main__':
     for elem in C:
         print(elem)
 
-    B.update(User, {'name': 'Денис', 'surname': 'Косяков', 'height': 184, 'year_born': 1986}, id=5)
-    G = User(name='Гена', surname='Фараонов', height=178, year_born=1992)
+    B.update(User, {'first_name': 'Денис', 'surname': 'Косяков', 'height': 184, 'year_born': 1986}, id=5)
+    G = User(first_name='Гена', surname='Фараонов', height=178, year_born=1992)
     B.create(G)
 
     E = B.all(User)
