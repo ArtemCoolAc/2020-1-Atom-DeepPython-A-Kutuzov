@@ -123,15 +123,25 @@ class ORMDatabase:
 
     def create(self, object):
         """ Создание таблицы при её отсутствии и добавление объекта в любом случае"""
+        class_name = str(object).split('.')[1][:-2]
         print(object.__class__.__name__)
+
+        def full_map(key, value):
+            full_mapping = {
+                "StringField": f"VARCHAR ({value.maximum_length if hasattr(value, 'maximum_length') else ''})",
+                "IntField": f"INTEGER CHECK ({key} <= {value.maximum_value if hasattr(value, 'maximum_value') else ''})"}
+            return full_mapping[value.__class__.__name__]
+
+        # mapping[value.__class__.__name__]
+
         mapping = {'StringField': 'VARCHAR', 'IntField': 'INTEGER'}
-        command = f"""CREATE TABLE IF NOT EXISTS public.{object.__class__.__name__} (
-        {", ".join([f"{key} {mapping[value.__class__.__name__]}" for key, value in object._fields.items()])}
+        command = f"""CREATE TABLE IF NOT EXISTS public.{class_name} (
+        {", ".join([f"{key} {full_map(key, value)}" for key, value in object._fields.items()])}
         )"""
         print(command)
         self.cursor.execute(command)
         self.connection.commit()
-        self.insert(object)
+        # self.insert(object)
 
     def insert(self, obj):
         """ Вставка данных"""
